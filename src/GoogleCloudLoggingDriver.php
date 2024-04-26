@@ -6,11 +6,14 @@ namespace Marick\LaravelGoogleCloudLogging;
 
 use Google\Cloud\Logging\Logger;
 use Google\Cloud\Logging\Type\LogSeverity;
+use Monolog\Handler\ProcessableHandlerTrait;
 use Psr\Log\LoggerInterface;
 use Stringable;
 
 class GoogleCloudLoggingDriver implements LoggerInterface
 {
+    use ProcessableHandlerTrait;
+
     public function __construct(private Logger $logger)
     {
         //
