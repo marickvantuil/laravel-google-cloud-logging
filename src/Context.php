@@ -6,7 +6,7 @@ namespace Marick\LaravelGoogleCloudLogging;
 
 class Context
 {
-    public function __construct(private array $config)
+    public function __construct(private array $config, private array $context)
     {
         //
     }
@@ -14,24 +14,35 @@ class Context
     public function create(): array
     {
         return array_merge_recursive(
-            $this->resourceLabels(),
+            $this->httpRequest(),
             $this->cloudRun(),
+            $this->labels(),
         );
     }
 
-    private function resourceLabels(): array
+    private function httpRequest(): array
     {
-        $labels = [];
-
-        if (! empty($this->config['location'])) {
-            $labels['location'] = $this->config['location'];
+        if (app()->runningInConsole()) {
+            return [];
         }
 
         return [
-            'resource' => [
-                'labels' => $labels,
+            'httpRequest' => [
+                'requestMethod' => request()->method(),
+                'requestUrl' => request()->url(),
             ],
         ];
+    }
+
+    private function location(): array
+    {
+        if (! empty($this->config['location'])) {
+            return [
+                'location' => $this->config['location'],
+            ];
+        }
+
+        return [];
     }
 
     private function cloudRun(): array
@@ -46,8 +57,20 @@ class Context
                     'labels' => [
                         'service_name' => $service,
                         'revision_name' => $revision,
+                        ...$this->location(),
                     ],
                 ],
+            ];
+        }
+
+        return [];
+    }
+
+    private function labels(): array
+    {
+        if (! empty($this->context)) {
+            return [
+                'labels' => $this->context,
             ];
         }
 
