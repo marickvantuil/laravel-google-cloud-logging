@@ -6,7 +6,6 @@ namespace Marick\LaravelGoogleCloudLogging;
 
 use Google\Cloud\Logging\Logger;
 use Google\Cloud\Logging\Type\LogSeverity;
-use Illuminate\Support\Facades\Context as LaravelContext;
 use Illuminate\Support\Facades\Log;
 use Monolog\Handler\Handler as MonologHandler;
 use Monolog\LogRecord;
@@ -27,15 +26,12 @@ class Handler extends MonologHandler
     public function handle(LogRecord $record): bool
     {
         try {
+            $enrichLog = new EnrichLog($this->config, $record->context);
+
             $this->logger->write(
                 [
                     'message' => $record->message,
-                    ...match (LaravelContext::isEmpty()) {
-                        false => [
-                            'illuminate:log:context' => LaravelContext::all(),
-                        ],
-                        true => [],
-                    },
+                    ...$enrichLog->enrichedOptions(),
                 ],
                 [
                     'severity' => match ($record->level->name) {
@@ -47,7 +43,7 @@ class Handler extends MonologHandler
                         'Alert' => LogSeverity::ALERT,
                         'Critical' => LogSeverity::CRITICAL,
                     },
-                    ...(new Context($this->config, $record->context))->create(),
+                    ...$enrichLog->enrichedOptions(),
                 ]);
         } catch (Throwable $throwable) {
             Log::driver('stack')->error((string) $throwable);
