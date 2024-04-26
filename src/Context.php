@@ -16,6 +16,7 @@ class Context
         return array_merge_recursive(
             $this->httpRequest(),
             $this->cloudRun(),
+            $this->appEngine(),
             $this->labels(),
         );
     }
@@ -58,6 +59,26 @@ class Context
                         'service_name' => $service,
                         'revision_name' => $revision,
                         ...$this->location(),
+                    ],
+                ],
+            ];
+        }
+
+        return [];
+    }
+
+    private function appEngine(): array
+    {
+        $service = env('GAE_SERVICE');
+        $version = env('GAE_VERSION');
+
+        if ($service && $version) {
+            return [
+                'resource' => [
+                    'type' => 'gae_app',
+                    'labels' => [
+                        'module_id' => $service,
+                        'version_id' => $version,
                     ],
                 ],
             ];
