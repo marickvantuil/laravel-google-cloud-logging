@@ -6,9 +6,9 @@ namespace Marick\LaravelGoogleCloudLogging;
 
 use Google\Cloud\Logging\LoggingClient;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
-class CloudLoggingServiceProvider extends ServiceProvider
+class ServiceProvider extends LaravelServiceProvider
 {
     public function register(): void
     {
@@ -17,7 +17,13 @@ class CloudLoggingServiceProvider extends ServiceProvider
 
             $logger = $client->logger('laravel');
 
-            return new GoogleCloudLoggingDriver($logger);
+            return new Logger(
+                name: 'google_cloud',
+                handlers: [
+                    new Handler($logger),
+                ],
+                processors: [],
+            );
         });
     }
 }

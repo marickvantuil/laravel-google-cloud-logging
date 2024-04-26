@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Marick\LaravelGoogleCloudLogging;
 
-class GoogleCloudContext
+class Context
 {
     public function create(): array
     {
