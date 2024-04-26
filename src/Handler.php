@@ -11,7 +11,7 @@ use Monolog\LogRecord;
 
 class Handler extends MonologHandler
 {
-    public function __construct(private Logger $logger)
+    public function __construct(private Logger $logger, private array $config = [])
     {
         //
     }
@@ -33,7 +33,7 @@ class Handler extends MonologHandler
                 'Critical' => LogSeverity::CRITICAL,
             },
             $record->context,
-            ...(new Context())->create(),
+            ...(new Context($this->config))->create(),
         ]);
 
         return true;
