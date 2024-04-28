@@ -28,13 +28,14 @@ class EnrichLog
         ];
     }
 
-    public function enrichedOptions(): array
+    public function options(): array
     {
         return array_merge_recursive(
             $this->httpRequest(),
             $this->cloudRun(),
             $this->appEngine(),
-            $this->labels(),
+            $this->logContext(),
+            $this->laravelContext(),
         );
 
     }
@@ -101,7 +102,7 @@ class EnrichLog
         return [];
     }
 
-    private function labels(): array
+    private function logContext(): array
     {
         if (! empty($this->context)) {
             return [
@@ -110,5 +111,20 @@ class EnrichLog
         }
 
         return [];
+    }
+
+    private function laravelContext(): array
+    {
+        if (! class_exists(Context::class)) {
+            return [];
+        }
+
+        if (Context::isEmpty()) {
+            return [];
+        }
+
+        return [
+            'labels' => Context::all(),
+        ];
     }
 }

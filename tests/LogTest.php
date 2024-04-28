@@ -71,8 +71,10 @@ class LogTest extends TestCase
         logger()->debug('hey');
 
         // Assert
-        CloudLogging::assertWritten(function (array $entry): bool {
-            return $entry['illuminate:log:context'] === ['user' => 5];
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return $options['labels'] === [
+                'user' => 5,
+            ];
         });
     }
 
