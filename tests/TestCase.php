@@ -2,23 +2,26 @@
 
 namespace Tests;
 
+use Marick\LaravelGoogleCloudLogging\ServiceProvider;
+use Orchestra\Testbench\Concerns\WithWorkbench;
+
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    use WithWorkbench;
+
     protected function getPackageProviders($app)
     {
         return [
-            \Stackkit\LaravelGoogleCloudLogging\LoggingServiceProvider::class,
+            ServiceProvider::class,
         ];
-    }
-
-    protected function defineDatabaseMigrations()
-    {
-        $this->loadMigrationsFrom(__DIR__ . '/../migrations');
-        $this->loadMigrationsFrom(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/migrations');
     }
 
     protected function getEnvironmentSetUp($app)
     {
-//        $app['config']->set('cloud-tasks.dashboard.enabled', false);
+        $app['config']->set('logging.channels.google_cloud', [
+            'driver' => 'google_cloud',
+        ]);
+
+        $app['config']->set('logging.default', 'google_cloud');
     }
 }

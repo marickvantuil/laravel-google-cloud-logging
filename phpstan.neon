@@ -1,10 +1,8 @@
 includes:
-    - ./vendor/nunomaduro/larastan/extension.neon
+    - ./vendor/larastan/larastan/extension.neon
     - ./vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
 parameters:
     paths:
         - src
     level: 9
     checkMissingIterableValueType: false
-    ignoreErrors:
-        - '/Cannot call method when\(\) on mixed/'

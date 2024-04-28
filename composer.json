@@ -1,31 +1,61 @@
 {
-    "name": "stackkit/laravel-google-cloud-logging",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Marick van Tuil",
-            "email": "info@marickvantuil.nl"
-        }
-    ],
-    "require": {
-        "google/cloud-logging": "^1.10"
-    },
-    "autoload": {
-        "psr-4": {
-            "Stackkit\\LaravelGoogleCloudLogging\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Tests\\": "tests/",
-            "Factories\\": "factories/"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Stackkit\\LaravelGoogleCloudLogging\\LoggingServiceProvider"
-            ]
-        }
+  "name": "marick/laravel-google-cloud-logging",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Marick van Tuil",
+      "email": "info@marickvantuil.nl"
     }
+  ],
+  "require": {
+    "google/cloud-logging": "^1.24",
+    "php": "^8.1 || 8.2 || 8.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Marick\\LaravelGoogleCloudLogging\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/",
+      "Workbench\\App\\": "workbench/app/",
+      "Workbench\\Database\\Factories\\": "workbench/database/factories/",
+      "Workbench\\Database\\Seeders\\": "workbench/database/seeders/"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Marick\\LaravelGoogleCloudLogging\\ServiceProvider"
+      ]
+    }
+  },
+  "require-dev": {
+    "laravel/pint": "^1.15",
+    "laravel/framework": "^10.0 || ^11.0",
+    "larastan/larastan": "^2.9",
+    "thecodingmachine/phpstan-safe-rule": "^1.2",
+    "orchestra/testbench": "^9.0",
+    "nunomaduro/collision": "^8.0"
+  },
+  "scripts": {
+    "test": "@php vendor/bin/testbench package:test",
+    "post-autoload-dump": [
+      "@clear",
+      "@prepare"
+    ],
+    "clear": "@php vendor/bin/testbench package:purge-skeleton --ansi",
+    "prepare": "@php vendor/bin/testbench package:discover --ansi",
+    "build": "@php vendor/bin/testbench workbench:build --ansi",
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "@build",
+      "@php vendor/bin/testbench serve"
+    ],
+    "lint": [
+      "@php vendor/bin/pint",
+      "@php vendor/bin/phpstan analyse"
+    ]
+  }
 }
