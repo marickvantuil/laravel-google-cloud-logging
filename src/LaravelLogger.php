@@ -6,7 +6,7 @@ namespace Marick\LaravelGoogleCloudLogging;
 
 use Monolog\Logger as MonologLogger;
 
-class Logger extends MonologLogger
+class LaravelLogger extends MonologLogger
 {
     //
 }

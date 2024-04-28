@@ -2,23 +2,26 @@
 
 namespace Tests;
 
-use Stackkit\LaravelGoogleCloudLogging\ViaGoogleCloudLogger;
+use Marick\LaravelGoogleCloudLogging\ServiceProvider;
+use Orchestra\Testbench\Concerns\WithWorkbench;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {
+    use WithWorkbench;
+
     protected function getPackageProviders($app)
     {
-        return [];
+        return [
+            ServiceProvider::class,
+        ];
     }
 
     protected function getEnvironmentSetUp($app)
     {
-        $app['config']->set('logging.channels.googlecloud', [
-            'driver' => 'custom',
-            'via' => ViaGoogleCloudLogger::class,
-            'project_id' => env('GOOGLE_CLOUD_PROJECT_ID'),
+        $app['config']->set('logging.channels.google_cloud', [
+            'driver' => 'google_cloud',
         ]);
 
-        $app['config']->set('logging.default', 'googlecloud');
+        $app['config']->set('logging.default', 'google_cloud');
     }
 }

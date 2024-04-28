@@ -1,32 +1,81 @@
 name: Run tests
 
 on:
-  pull_request:
+  pull_request_target:
+    types: [ opened, synchronize, labeled ]
   schedule:
     - cron: '0 0 * * *'
 
 jobs:
+  access_check:
+    runs-on: ubuntu-latest
+    name: Access check
+    steps:
+      - name: Ensure pull-request is safe to run
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            if (context.eventName === 'schedule') {
+              return
+            }
+            
+            // If the user that pushed the commit is a maintainer, skip the check
+            const collaborators = await github.rest.repos.listCollaborators({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            
+            if (collaborators.data.some(c => c.login === context.actor)) {
+              console.log(`User ${context.actor} is allowed to run tests because they are a collaborator.`);
+              return
+            }
+            
+            const issue_number = context.issue.number;
+            const repository = context.repo.repo;
+            const owner = context.repo.owner;
+            
+            const response = await github.rest.issues.listLabelsOnIssue({
+              owner,
+              repo: repository,
+              issue_number
+            });
+            const labels = response.data.map(label => label.name);
+            let hasLabel = labels.includes('safe-to-test')
+            
+            if (context.payload.action === 'synchronize' && hasLabel) {
+                hasLabel = false
+                await github.rest.issues.removeLabel({
+                  owner,
+                  repo: repository,
+                  issue_number,
+                  name: 'safe-to-test'
+                });
+            }
+            
+            if (!hasLabel) {
+              throw "Action was not authorized. Exiting now."
+            }
+
   php-tests:
     runs-on: ubuntu-latest
-
+    needs: access_check
     strategy:
       matrix:
         payload:
-          - { laravel: '9.*', php: '8.1', 'testbench': '7.*'}
-          - { laravel: '9.*', php: '8.0', 'testbench': '7.*'}
-          - { laravel: '8.*', php: '8.1', 'testbench': '6.*'}
-          - { laravel: '8.*', php: '8.0', 'testbench': '6.*'}
-          - { laravel: '8.*', php: '7.4', 'testbench': '6.*'}
-          - { laravel: '7.*', php: '8.0', 'testbench': '5.*' }
-          - { laravel: '7.*', php: '7.4', 'testbench': '5.*' }
-          - { laravel: '6.*', php: '8.0', 'testbench': '4.*' }
-          - { laravel: '6.*', php: '7.4', 'testbench': '4.*' }
+          - { laravel: '10.*', php: '8.3', 'testbench': '8.*' }
+          - { laravel: '10.*', php: '8.2', 'testbench': '8.*' }
+          - { laravel: '10.*', php: '8.1', 'testbench': '8.*' }
+          - { laravel: '11.*', php: '8.2', 'testbench': '9.*' }
+          - { laravel: '11.*', php: '8.3', 'testbench': '9.*' }
 
-    name: PHP ${{ matrix.payload.php }} - Laravel ${{ matrix.payload.laravel }}
+    name: PHP ${{ matrix.payload.php }} - Laravel ${{ matrix.payload.laravel }} - DB ${{ matrix.db }}
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v1
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -35,8 +84,13 @@ jobs:
           extensions: mbstring, dom, fileinfo
           coverage: none
 
-      - name: Execute checks
+      - name: Install dependencies
         run: |
           composer require "laravel/framework:${{ matrix.payload.laravel }}" "orchestra/testbench:${{ matrix.payload.testbench }}" --no-interaction --no-update
-          composer update --prefer-stable --prefer-dist --no-interaction --no-suggest
-          vendor/bin/phpstan
+          composer update --prefer-stable --prefer-dist --no-interaction
+      - name: Execute tests
+        env:
+          CI_SERVICE_ACCOUNT_JSON_KEY: ${{ secrets.CI_SERVICE_ACCOUNT_JSON_KEY }}
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS=$CI_SERVICE_ACCOUNT_JSON_KEY
+          composer test

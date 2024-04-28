@@ -41,10 +41,6 @@ class EnrichLog
 
     private function httpRequest(): array
     {
-        if (app()->runningInConsole()) {
-            return [];
-        }
-
         return [
             'httpRequest' => [
                 'requestMethod' => request()->method(),
