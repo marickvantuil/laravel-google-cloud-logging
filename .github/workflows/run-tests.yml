@@ -92,5 +92,6 @@ jobs:
         env:
           CI_SERVICE_ACCOUNT_JSON_KEY: ${{ secrets.CI_SERVICE_ACCOUNT_JSON_KEY }}
         run: |
-          export GOOGLE_APPLICATION_CREDENTIALS=$CI_SERVICE_ACCOUNT_JSON_KEY
+          echo $CI_SERVICE_ACCOUNT_JSON_KEY > tests/key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/tests/key.json
           composer test
