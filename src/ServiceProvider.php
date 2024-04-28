@@ -8,13 +8,14 @@ use Google\Cloud\Logging\LoggingClient;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
+use Monolog\Logger;
 
 class ServiceProvider extends LaravelServiceProvider
 {
     public function register(): void
     {
         Log::extend('google_cloud', function (Application $app, array $config) {
-            return new LaravelLogger(
+            return new Logger(
                 name: 'google_cloud',
                 handlers: [
                     new Handler($config),
