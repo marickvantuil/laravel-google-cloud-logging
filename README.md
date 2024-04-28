@@ -32,4 +32,51 @@ LOG_CHANNEL=google_cloud
 > [!IMPORTANT]
 > A location is mandatory to make log entries appear in Cloud Run or App Engine.
 
+# How to
 
+## Use log context
+
+```php
+use Illuminate\Support\Facades\Log;
+
+Log::debug('user logged in', [
+    'user' => 5,
+]);
+```
+
+The above context will be added in Cloud Logging:
+
+```json
+{
+  "jsonPayload": {
+    "message": "user logged in"
+  },
+  "labels": {
+    "user": 5
+  }
+}
+```
+
+## Use `Context`
+
+```php
+use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Facades\Log;
+
+Context::add('user', 5);
+
+Log::alert('user logged in');
+```
+
+The above context will be added in Cloud Logging:
+
+```json
+{
+  "jsonPayload": {
+    "message": "user logged in"
+  },
+  "labels": {
+    "user": 5
+  }
+}
+```
