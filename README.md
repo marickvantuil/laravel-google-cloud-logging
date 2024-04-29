@@ -3,8 +3,8 @@
 This package lets you use Google Cloud Logging as the log driver for Laravel.
 
 The package will automatically detect the environment it's running
-in (Cloud Run or App Engine), and attach the correct labels to the log entry
-so in Google Cloud you can view the logs for each service.
+in (currently supports Cloud Run or App Engine), and attach the correct labels to the log entry
+so the logs appear in the application service.
 
 # Installation
 
