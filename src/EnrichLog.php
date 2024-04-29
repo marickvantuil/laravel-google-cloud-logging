@@ -13,21 +13,6 @@ class EnrichLog
         //
     }
 
-    public function enrichedEntry(): array
-    {
-        if (! class_exists(Context::class)) {
-            return [];
-        }
-
-        if (Context::isEmpty()) {
-            return [];
-        }
-
-        return [
-            'illuminate:log:context' => Context::all(),
-        ];
-    }
-
     public function options(): array
     {
         return array_merge_recursive(
