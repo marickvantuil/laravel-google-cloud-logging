@@ -30,7 +30,6 @@ class Handler extends MonologHandler
             CloudLogging::write(
                 [
                     'message' => $record->message,
-                    ...$enrichLog->enrichedEntry(),
                 ],
                 [
                     'severity' => match ($record->level->name) {
@@ -43,7 +42,7 @@ class Handler extends MonologHandler
                         'Critical' => LogSeverity::CRITICAL,
                         'Emergency' => LogSeverity::EMERGENCY,
                     },
-                    ...$enrichLog->enrichedOptions(),
+                    ...$enrichLog->options(),
                 ]);
         } catch (Throwable $throwable) {
             Log::driver('stack')->error((string) $throwable);

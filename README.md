@@ -3,8 +3,8 @@
 This package lets you use Google Cloud Logging as the log driver for Laravel.
 
 The package will automatically detect the environment it's running
-in (Cloud Run or App Engine), and attach the correct labels to the log entry
-so in Google Cloud you can view the logs for each service.
+in (currently supports Cloud Run or App Engine), and attach the correct labels to the log entry
+so the logs appear in the application service.
 
 # Installation
 
@@ -32,4 +32,51 @@ LOG_CHANNEL=google_cloud
 > [!IMPORTANT]
 > A location is mandatory to make log entries appear in Cloud Run or App Engine.
 
+# How to
 
+## Use log context
+
+```php
+use Illuminate\Support\Facades\Log;
+
+Log::debug('user logged in', [
+    'user' => 5,
+]);
+```
+
+The above context will be added in Cloud Logging:
+
+```json
+{
+  "jsonPayload": {
+    "message": "user logged in"
+  },
+  "labels": {
+    "user": 5
+  }
+}
+```
+
+## Use `Context`
+
+```php
+use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Facades\Log;
+
+Context::add('user', 5);
+
+Log::alert('user logged in');
+```
+
+The above context will be added in Cloud Logging:
+
+```json
+{
+  "jsonPayload": {
+    "message": "user logged in"
+  },
+  "labels": {
+    "user": 5
+  }
+}
+```

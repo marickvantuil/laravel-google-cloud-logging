@@ -36,8 +36,8 @@
     "laravel/framework": "^10.0 || ^11.0",
     "larastan/larastan": "^2.9",
     "thecodingmachine/phpstan-safe-rule": "^1.2",
-    "orchestra/testbench": "^9.0",
-    "nunomaduro/collision": "^8.0"
+    "orchestra/testbench": "^8.0 || ^9.0",
+    "nunomaduro/collision": "^7.0 || ^8.0"
   },
   "scripts": {
     "test": "@php vendor/bin/testbench package:test",
