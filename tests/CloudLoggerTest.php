@@ -51,7 +51,7 @@ class CloudLoggerTest extends TestCase
                 break 2;
             }
 
-            sleep(1);
+            sleep(5);
         }
 
         $this->assertCount(1, $matches);
