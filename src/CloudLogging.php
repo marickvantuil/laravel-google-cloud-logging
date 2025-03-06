@@ -15,6 +15,6 @@ class CloudLogging extends Facade
 
     public static function fake(): void
     {
-        self::swap(new FakeCloudLogger());
+        self::swap(new FakeCloudLogger);
     }
 }
