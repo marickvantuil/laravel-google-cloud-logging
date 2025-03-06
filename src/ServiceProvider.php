@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Marick\LaravelGoogleCloudLogging;
 
-use Google\Cloud\Logging\LoggingClient;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Monolog\Logger;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Foundation\Application;
+use Google\Cloud\Logging\LoggingClient;
+use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
 class ServiceProvider extends LaravelServiceProvider
 {
@@ -25,7 +25,7 @@ class ServiceProvider extends LaravelServiceProvider
         });
 
         app()->bind('cloud_logging', function () {
-            $client = new LoggingClient();
+            $client = new LoggingClient;
 
             return $client->logger('laravel');
         });

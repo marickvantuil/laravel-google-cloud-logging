@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tests;
 
-use Google\Cloud\Logging\LoggingClient;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
+use Google\Cloud\Logging\LoggingClient;
 
 class CloudLoggerTest extends TestCase
 {
@@ -16,7 +16,7 @@ class CloudLoggerTest extends TestCase
     {
         parent::setUp();
 
-        $this->client = new LoggingClient();
+        $this->client = new LoggingClient;
     }
 
     #[Test]
