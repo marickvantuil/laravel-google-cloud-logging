@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Tests;
 
 use Illuminate\Support\Env;
-use Illuminate\Support\Facades\Context;
-use Marick\LaravelGoogleCloudLogging\CloudLogging;
 use PHPUnit\Framework\Attributes\Test;
+use Illuminate\Support\Facades\Context;
 use PHPUnit\Framework\Attributes\TestWith;
+use Marick\LaravelGoogleCloudLogging\CloudLogging;
 
 class LogTest extends TestCase
 {

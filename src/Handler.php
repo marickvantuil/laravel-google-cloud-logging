@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Marick\LaravelGoogleCloudLogging;
 
-use Google\Cloud\Logging\Type\LogSeverity;
-use Illuminate\Support\Facades\Log;
-use Monolog\Handler\Handler as MonologHandler;
-use Monolog\LogRecord;
 use Throwable;
+use Monolog\LogRecord;
+use Illuminate\Support\Facades\Log;
+use Google\Cloud\Logging\Type\LogSeverity;
+use Monolog\Handler\Handler as MonologHandler;
 
 class Handler extends MonologHandler
 {

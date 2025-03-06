@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests;
 
-use Marick\LaravelGoogleCloudLogging\ServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
+use Marick\LaravelGoogleCloudLogging\ServiceProvider;
 
 class TestCase extends \Orchestra\Testbench\TestCase
 {

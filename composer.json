@@ -8,8 +8,7 @@
     }
   ],
   "require": {
-    "google/cloud-logging": "^1.31.1",
-    "php": "^8.1 || 8.2 || 8.3 || 8.4"
+    "google/cloud-logging": "^1.31.1"
   },
   "autoload": {
     "psr-4": {
@@ -33,11 +32,10 @@
   },
   "require-dev": {
     "laravel/pint": "^1.18.3",
-    "laravel/framework": "^10.0 || ^11.34.2",
-    "larastan/larastan": "^2.9.12",
+    "laravel/framework": "^11.0 || ^12.0",
+    "larastan/larastan": "^3.0",
     "thecodingmachine/phpstan-safe-rule": "^1.2",
-    "orchestra/testbench": "^8.0 || ^9.6.1",
-    "nunomaduro/collision": "^7.0 || ^8.5"
+    "orchestra/testbench": "^10.1"
   },
   "scripts": {
     "test": "@php vendor/bin/testbench package:test",
@@ -56,6 +54,14 @@
     "lint": [
       "@php vendor/bin/pint",
       "@php vendor/bin/phpstan analyse"
+    ],
+    "l11": [
+      "composer require laravel/framework:11.* orchestra/testbench:9.* --no-interaction --no-update",
+      "composer update --prefer-stable --prefer-dist --no-interaction"
+    ],
+    "l12": [
+      "composer require laravel/framework:12.* orchestra/testbench:10.* --no-interaction --no-update",
+      "composer update --prefer-stable --prefer-dist --no-interaction"
     ]
   }
 }
