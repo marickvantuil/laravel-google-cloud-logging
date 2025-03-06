@@ -37,7 +37,9 @@ class EnrichLog
 
     private function cloudRun(): array
     {
+        // @phpstan-ignore-next-line
         $revision = env('K_REVISION');
+        // @phpstan-ignore-next-line
         $service = env('K_SERVICE');
 
         if ($revision && $service) {
@@ -58,7 +60,9 @@ class EnrichLog
 
     private function appEngine(): array
     {
+        // @phpstan-ignore-next-line
         $service = env('GAE_SERVICE');
+        // @phpstan-ignore-next-line
         $version = env('GAE_VERSION');
 
         if ($service && $version) {
