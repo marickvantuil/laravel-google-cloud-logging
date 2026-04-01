@@ -27,6 +27,8 @@ class LogTest extends TestCase
         Env::getRepository()->clear('KUBERNETES_NAMESPACE');
         Env::getRepository()->clear('KUBERNETES_POD_NAME');
         Env::getRepository()->clear('KUBERNETES_CONTAINER_NAME');
+        Env::getRepository()->clear('GOOGLE_CLOUD_PROJECT');
+        Env::getRepository()->clear('GCLOUD_PROJECT');
     }
 
     #[Test]
@@ -247,6 +249,39 @@ class LogTest extends TestCase
         CloudLogging::assertWritten(function (array $entry, array $options): bool {
             return isset($options['sourceLocation']['file'])
                 && ! empty($options['sourceLocation']['file']);
+        });
+    }
+
+    #[Test]
+    public function trace_correlation_is_attached(): void
+    {
+        // Arrange
+        Env::getRepository()->set('GOOGLE_CLOUD_PROJECT', 'my-project');
+        request()->headers->set('X-Cloud-Trace-Context', '105445aa7843bc8bf206b12000100000/1;o=1');
+
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return ($options['trace'] ?? null) === 'projects/my-project/traces/105445aa7843bc8bf206b12000100000'
+                && ($options['spanId'] ?? null) === '1'
+                && ($options['traceSampled'] ?? null) === true;
+        });
+    }
+
+    #[Test]
+    public function trace_is_not_attached_without_header(): void
+    {
+        // Arrange
+        Env::getRepository()->set('GOOGLE_CLOUD_PROJECT', 'my-project');
+
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return ! isset($options['trace']);
         });
     }
 

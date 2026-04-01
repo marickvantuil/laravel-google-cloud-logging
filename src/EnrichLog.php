@@ -23,6 +23,7 @@ class EnrichLog
             $this->logContext(),
             $this->laravelContext(),
             $this->sourceLocation(),
+            $this->trace(),
         );
 
     }
@@ -86,6 +87,37 @@ class EnrichLog
         }
 
         return [];
+    }
+
+    private function trace(): array
+    {
+        $header = request()->header('X-Cloud-Trace-Context');
+
+        if (! $header) {
+            return [];
+        }
+
+        // @phpstan-ignore-next-line
+        $project = env('GOOGLE_CLOUD_PROJECT') ?? env('GCLOUD_PROJECT');
+
+        if (! $project) {
+            return [];
+        }
+
+        // Format: TRACE_ID/SPAN_ID;o=SAMPLE_DECISION
+        if (! preg_match('/^([a-f0-9]+)(?:\/([^;]+))?(?:;o=(\d+))?$/', $header, $matches)) {
+            return [];
+        }
+
+        $traceId = $matches[1] ?? null;
+        $spanId = $matches[2] ?? null;
+        $sampled = isset($matches[3]) ? $matches[3] === '1' : null;
+
+        return array_filter([
+            'trace' => $traceId ? "projects/{$project}/traces/{$traceId}" : null,
+            'spanId' => $spanId ?: null,
+            'traceSampled' => $sampled,
+        ], fn ($value) => $value !== null);
     }
 
     private function sourceLocation(): array
