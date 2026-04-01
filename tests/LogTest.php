@@ -22,6 +22,11 @@ class LogTest extends TestCase
         Env::getRepository()->clear('K_REVISION');
         Env::getRepository()->clear('GAE_SERVICE');
         Env::getRepository()->clear('GAE_VERSION');
+        Env::getRepository()->clear('KUBERNETES_SERVICE_HOST');
+        Env::getRepository()->clear('KUBERNETES_CLUSTER_NAME');
+        Env::getRepository()->clear('KUBERNETES_NAMESPACE');
+        Env::getRepository()->clear('KUBERNETES_POD_NAME');
+        Env::getRepository()->clear('KUBERNETES_CONTAINER_NAME');
     }
 
     #[Test]
@@ -229,6 +234,31 @@ class LogTest extends TestCase
         // Assert
         CloudLogging::assertWritten(function (array $entry, array $options): bool {
             return isset($options['httpRequest']['protocol']);
+        });
+    }
+
+    #[Test]
+    public function gke_resource_will_be_added(): void
+    {
+        // Arrange
+        Env::getRepository()->set('KUBERNETES_SERVICE_HOST', '10.0.0.1');
+        Env::getRepository()->set('KUBERNETES_CLUSTER_NAME', 'my-cluster');
+        Env::getRepository()->set('KUBERNETES_NAMESPACE', 'default');
+        Env::getRepository()->set('KUBERNETES_POD_NAME', 'my-pod-abc');
+
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return $options['resource'] === [
+                'type' => 'k8s_container',
+                'labels' => [
+                    'cluster_name' => 'my-cluster',
+                    'namespace_name' => 'default',
+                    'pod_name' => 'my-pod-abc',
+                ],
+            ];
         });
     }
 }

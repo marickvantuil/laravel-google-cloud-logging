@@ -19,6 +19,7 @@ class EnrichLog
             $this->httpRequest(),
             $this->cloudRun(),
             $this->appEngine(),
+            $this->gke(),
             $this->logContext(),
             $this->laravelContext(),
         );
@@ -84,6 +85,33 @@ class EnrichLog
         }
 
         return [];
+    }
+
+    private function gke(): array
+    {
+        // @phpstan-ignore-next-line
+        if (! env('KUBERNETES_SERVICE_HOST')) {
+            return [];
+        }
+
+        $labels = array_filter([
+            // @phpstan-ignore-next-line
+            'cluster_name' => env('KUBERNETES_CLUSTER_NAME'),
+            // @phpstan-ignore-next-line
+            'namespace_name' => env('KUBERNETES_NAMESPACE'),
+            // @phpstan-ignore-next-line
+            'pod_name' => env('KUBERNETES_POD_NAME'),
+            // @phpstan-ignore-next-line
+            'container_name' => env('KUBERNETES_CONTAINER_NAME'),
+            ...$this->location(),
+        ], fn ($value) => $value !== null && $value !== '');
+
+        return [
+            'resource' => [
+                'type' => 'k8s_container',
+                'labels' => $labels,
+            ],
+        ];
     }
 
     private function location(): array
