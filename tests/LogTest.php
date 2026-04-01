@@ -192,10 +192,24 @@ class LogTest extends TestCase
 
         // Assert
         CloudLogging::assertWritten(function (array $entry, array $options): bool {
-            return $options['labels'] === [
-                'user_agent' => 'example user agent',
-                'user' => 512,
-            ];
+            return ($entry['user_agent'] ?? null) === 'example user agent'
+                && ($entry['user'] ?? null) === 512;
+        });
+    }
+
+    #[Test]
+    public function nested_context_values_are_in_entry_payload(): void
+    {
+        // Act
+        logger()->debug('hey', [
+            'user' => ['id' => 1, 'name' => 'Alice'],
+            'tags' => ['admin', 'editor'],
+        ]);
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return ($entry['user'] ?? null) === ['id' => 1, 'name' => 'Alice']
+                && ($entry['tags'] ?? null) === ['admin', 'editor'];
         });
     }
 

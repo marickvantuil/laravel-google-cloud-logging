@@ -30,6 +30,7 @@ class Handler extends MonologHandler
             CloudLogging::write(
                 [
                     'message' => $record->message,
+                    ...$record->context,
                 ],
                 [
                     'severity' => match ($record->level->name) {

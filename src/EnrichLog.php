@@ -177,12 +177,6 @@ class EnrichLog
 
     private function logContext(): array
     {
-        if (! empty($this->context)) {
-            return [
-                'labels' => $this->context,
-            ];
-        }
-
         return [];
     }
 
