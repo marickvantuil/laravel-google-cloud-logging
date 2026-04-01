@@ -27,11 +27,17 @@ class EnrichLog
 
     private function httpRequest(): array
     {
+        $fields = array_filter([
+            'requestMethod' => request()->method(),
+            'requestUrl' => request()->url(),
+            'userAgent' => request()->userAgent(),
+            'remoteIp' => request()->ip(),
+            'referer' => request()->header('referer'),
+            'protocol' => request()->secure() ? 'HTTPS' : 'HTTP',
+        ], fn ($value) => $value !== null && $value !== '');
+
         return [
-            'httpRequest' => [
-                'requestMethod' => request()->method(),
-                'requestUrl' => request()->url(),
-            ],
+            'httpRequest' => $fields,
         ];
     }
 

@@ -191,4 +191,44 @@ class LogTest extends TestCase
             ];
         });
     }
+
+    #[Test]
+    public function http_request_includes_user_agent_and_remote_ip(): void
+    {
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return isset($options['httpRequest']['userAgent'])
+                && isset($options['httpRequest']['remoteIp']);
+        });
+    }
+
+    #[Test]
+    public function http_request_includes_referer_when_present(): void
+    {
+        // Arrange
+        request()->headers->set('referer', 'https://example.com');
+
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return ($options['httpRequest']['referer'] ?? null) === 'https://example.com';
+        });
+    }
+
+    #[Test]
+    public function http_request_includes_protocol(): void
+    {
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return isset($options['httpRequest']['protocol']);
+        });
+    }
 }
