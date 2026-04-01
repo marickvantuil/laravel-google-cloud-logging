@@ -32,10 +32,10 @@
   },
   "require-dev": {
     "laravel/pint": "^1.18.3",
-    "laravel/framework": "^11.0 || ^12.0",
+    "laravel/framework": "^12.0 || ^13.0",
     "larastan/larastan": "^3.0",
     "thecodingmachine/phpstan-safe-rule": "^1.2",
-    "orchestra/testbench": "^10.1"
+    "orchestra/testbench": "^10.1 || ^11.0"
   },
   "scripts": {
     "test": "@php vendor/bin/testbench package:test",
@@ -55,12 +55,12 @@
       "@php vendor/bin/pint",
       "@php vendor/bin/phpstan analyse"
     ],
-    "l11": [
-      "composer require laravel/framework:11.* orchestra/testbench:9.* --no-interaction --no-update",
-      "composer update --prefer-stable --prefer-dist --no-interaction"
-    ],
     "l12": [
       "composer require laravel/framework:12.* orchestra/testbench:10.* --no-interaction --no-update",
+      "composer update --prefer-stable --prefer-dist --no-interaction"
+    ],
+    "l13": [
+      "composer require laravel/framework:13.* orchestra/testbench:11.* --no-interaction --no-update",
       "composer update --prefer-stable --prefer-dist --no-interaction"
     ]
   }

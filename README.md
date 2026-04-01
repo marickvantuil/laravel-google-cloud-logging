@@ -8,6 +8,8 @@ The package will automatically detect the environment it's running
 in (currently supports Cloud Run or App Engine), and attach the correct labels to the log entry
 so the logs appear in the application service.
 
+This package requires Laravel 12 or 13.
+
 # Installation
 
 Install the package with Composer:
