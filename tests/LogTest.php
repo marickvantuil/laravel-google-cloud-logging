@@ -25,6 +25,21 @@ class LogTest extends TestCase
     }
 
     #[Test]
+    public function log_name_can_be_configured(): void
+    {
+        // Arrange
+        app('config')->set('logging.channels.google_cloud.log_name', 'my-app');
+
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return $entry['message'] === 'hey';
+        });
+    }
+
+    #[Test]
     public function it_can_log(): void
     {
         // Act

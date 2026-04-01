@@ -15,6 +15,12 @@ class ServiceProvider extends LaravelServiceProvider
     public function register(): void
     {
         Log::extend('google_cloud', function (Application $app, array $config) {
+            $app->bind('cloud_logging', function () use ($config) {
+                $client = new LoggingClient;
+
+                return $client->logger($config['log_name'] ?? 'laravel');
+            });
+
             return new Logger(
                 name: 'google_cloud',
                 handlers: [
@@ -22,12 +28,6 @@ class ServiceProvider extends LaravelServiceProvider
                 ],
                 processors: [],
             );
-        });
-
-        app()->bind('cloud_logging', function () {
-            $client = new LoggingClient;
-
-            return $client->logger('laravel');
         });
     }
 }

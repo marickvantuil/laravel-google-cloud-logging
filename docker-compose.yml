@@ -3,5 +3,7 @@ services:
     build:
       context: .
       dockerfile: app.Dockerfile
+    environment:
+      PHP_OPEN_BASEDIR: ""
     volumes:
       - .:/var/www/html
