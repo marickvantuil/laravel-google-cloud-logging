@@ -8,7 +8,7 @@
     }
   ],
   "require": {
-    "google/cloud-logging": "^1.31.1"
+    "google/cloud-logging": "^1.32.1"
   },
   "autoload": {
     "psr-4": {
@@ -31,10 +31,10 @@
     }
   },
   "require-dev": {
-    "laravel/pint": "^1.18.3",
-    "laravel/framework": "^12.0 || ^13.0",
-    "larastan/larastan": "^3.0",
-    "thecodingmachine/phpstan-safe-rule": "^1.2",
+    "laravel/pint": "^1.29.0",
+    "laravel/framework": "^12.1.1 || ^13.0",
+    "larastan/larastan": "^3.2",
+    "thecodingmachine/phpstan-safe-rule": "^1.4",
     "orchestra/testbench": "^10.1 || ^11.0"
   },
   "scripts": {
