@@ -8,6 +8,7 @@ use Monolog\Logger;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Foundation\Application;
 use Google\Cloud\Logging\LoggingClient;
+use Monolog\Processor\IntrospectionProcessor;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 
 class ServiceProvider extends LaravelServiceProvider
@@ -26,7 +27,11 @@ class ServiceProvider extends LaravelServiceProvider
                 handlers: [
                     new Handler($config),
                 ],
-                processors: [],
+                processors: [
+                    new IntrospectionProcessor(
+                        skipClassesPartials: ['Illuminate\\', 'Marick\\', 'Psr\\'],
+                    ),
+                ],
             );
         });
     }

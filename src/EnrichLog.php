@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Context;
 
 class EnrichLog
 {
-    public function __construct(private array $config, private array $context)
+    public function __construct(private array $config, private array $context, private array $extra = [])
     {
         //
     }
@@ -22,6 +22,7 @@ class EnrichLog
             $this->gke(),
             $this->logContext(),
             $this->laravelContext(),
+            $this->sourceLocation(),
         );
 
     }
@@ -85,6 +86,23 @@ class EnrichLog
         }
 
         return [];
+    }
+
+    private function sourceLocation(): array
+    {
+        $location = array_filter([
+            'file' => $this->extra['file'] ?? null,
+            'line' => isset($this->extra['line']) ? (string) $this->extra['line'] : null,
+            'function' => $this->extra['function'] ?? null,
+        ], fn ($value) => $value !== null && $value !== '');
+
+        if (empty($location)) {
+            return [];
+        }
+
+        return [
+            'sourceLocation' => $location,
+        ];
     }
 
     private function gke(): array

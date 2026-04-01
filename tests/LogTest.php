@@ -238,6 +238,19 @@ class LogTest extends TestCase
     }
 
     #[Test]
+    public function source_location_is_attached(): void
+    {
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return isset($options['sourceLocation']['file'])
+                && ! empty($options['sourceLocation']['file']);
+        });
+    }
+
+    #[Test]
     public function gke_resource_will_be_added(): void
     {
         // Arrange
