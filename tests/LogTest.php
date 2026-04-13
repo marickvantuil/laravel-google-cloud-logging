@@ -94,7 +94,7 @@ class LogTest extends TestCase
 
         // Assert
         CloudLogging::assertWritten(function (array $entry, array $options): bool {
-            return $options['labels'] === [
+            return $entry['laravelContext'] === [
                 'user' => 5,
             ];
         });
@@ -182,7 +182,7 @@ class LogTest extends TestCase
     }
 
     #[Test]
-    public function labels_can_be_added_through_context(): void
+    public function log_context_is_nested_in_entry_payload(): void
     {
         // Act
         logger()->debug('hey', [
@@ -192,24 +192,68 @@ class LogTest extends TestCase
 
         // Assert
         CloudLogging::assertWritten(function (array $entry, array $options): bool {
-            return ($entry['user_agent'] ?? null) === 'example user agent'
-                && ($entry['user'] ?? null) === 512;
+            return $entry['logContext'] === [
+                'user_agent' => 'example user agent',
+                'user' => 512,
+            ];
         });
     }
 
     #[Test]
-    public function nested_context_values_are_in_entry_payload(): void
+    public function labels_can_be_set_via_config(): void
     {
+        // Arrange
+        app('config')->set('logging.channels.google_cloud.labels', ['environment' => 'production']);
+
         // Act
-        logger()->debug('hey', [
-            'user' => ['id' => 1, 'name' => 'Alice'],
-            'tags' => ['admin', 'editor'],
-        ]);
+        logger()->debug('hey');
 
         // Assert
         CloudLogging::assertWritten(function (array $entry, array $options): bool {
-            return ($entry['user'] ?? null) === ['id' => 1, 'name' => 'Alice']
-                && ($entry['tags'] ?? null) === ['admin', 'editor'];
+            return ($options['labels']['environment'] ?? null) === 'production';
+        });
+    }
+
+    #[Test]
+    public function labels_can_be_set_per_log(): void
+    {
+        // Act
+        logger()->debug('hey', ['labels' => ['request_id' => 'abc123']]);
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return ($options['labels']['request_id'] ?? null) === 'abc123'
+                && ! isset($entry['logContext']['labels']);
+        });
+    }
+
+    #[Test]
+    public function labels_can_be_set_per_request(): void
+    {
+        // Arrange
+        CloudLogging::withLabels(['tenant_id' => '42']);
+
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return ($options['labels']['tenant_id'] ?? null) === '42';
+        });
+    }
+
+    #[Test]
+    public function labels_can_be_set_via_closure(): void
+    {
+        // Arrange
+        CloudLogging::withLabels(fn () => ['tenant_id' => '42']);
+
+        // Act
+        logger()->debug('hey');
+
+        // Assert
+        CloudLogging::assertWritten(function (array $entry, array $options): bool {
+            return ($options['labels']['tenant_id'] ?? null) === '42';
         });
     }
 

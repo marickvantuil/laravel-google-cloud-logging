@@ -25,12 +25,12 @@ class Handler extends MonologHandler
     public function handle(LogRecord $record): bool
     {
         try {
-            $enrichLog = new EnrichLog($this->config, $record->context, $record->extra);
+            $enrichLog = new EnrichLog($this->config, $record->context, $record->extra, CloudLogging::getLabels());
 
             CloudLogging::write(
                 [
                     'message' => $record->message,
-                    ...$record->context,
+                    ...$enrichLog->data(),
                 ],
                 [
                     'severity' => match ($record->level->name) {

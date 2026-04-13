@@ -30,11 +30,9 @@ class CloudLoggerTest extends TestCase
         ]);
 
         // Act
-        $entries = $this->client->entries([
-            'filter' => implode("\n", [
-                'timestamp >= "'.$timestamp.'"',
-                'labels.my_label="'.$label.'"',
-            ]),
+        $filter = implode("\n", [
+            'timestamp >= "'.$timestamp.'"',
+            'jsonPayload.logContext.my_label="'.$label.'"',
         ]);
 
         $matches = [];
@@ -45,7 +43,7 @@ class CloudLoggerTest extends TestCase
                 break;
             }
 
-            foreach ($entries as $entry) {
+            foreach ($this->client->entries(['filter' => $filter]) as $entry) {
                 $matches[] = $entry;
 
                 break 2;

@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Context;
 
 class EnrichLog
 {
-    public function __construct(private array $config, private array $context, private array $extra = [])
+    public function __construct(private array $config, private array $context, private array $extra = [], private array $requestLabels = [])
     {
         //
     }
@@ -20,12 +20,18 @@ class EnrichLog
             $this->cloudRun(),
             $this->appEngine(),
             $this->gke(),
-            $this->logContext(),
-            $this->laravelContext(),
             $this->sourceLocation(),
             $this->trace(),
+            $this->labels(),
         );
+    }
 
+    public function data(): array
+    {
+        return array_merge_recursive(
+            $this->logContext(),
+            $this->laravelContext(),
+        );
     }
 
     private function httpRequest(): array
@@ -177,7 +183,30 @@ class EnrichLog
 
     private function logContext(): array
     {
-        return [];
+        $context = array_diff_key($this->context, ['labels' => null]);
+
+        if (empty($context)) {
+            return [];
+        }
+
+        return [
+            'logContext' => $context,
+        ];
+    }
+
+    private function labels(): array
+    {
+        $labels = array_merge(
+            $this->config['labels'] ?? [],
+            $this->context['labels'] ?? [],
+            $this->requestLabels,
+        );
+
+        if (empty($labels)) {
+            return [];
+        }
+
+        return ['labels' => $labels];
     }
 
     private function laravelContext(): array
@@ -191,7 +220,7 @@ class EnrichLog
         }
 
         return [
-            'labels' => Context::all(),
+            'laravelContext' => Context::all(),
         ];
     }
 }
