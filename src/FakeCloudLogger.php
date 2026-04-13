@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Marick\LaravelGoogleCloudLogging;
 
 use Closure;
-use Tests\TestCase;
+use PHPUnit\Framework\Assert;
 
 class FakeCloudLogger
 {
@@ -29,6 +29,6 @@ class FakeCloudLogger
             }
         }
 
-        TestCase::assertNotEmpty($matches, 'The given information was not logged.');
+        Assert::assertNotEmpty($matches, 'The given information was not logged.');
     }
 }
